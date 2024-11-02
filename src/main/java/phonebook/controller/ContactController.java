@@ -1,10 +1,9 @@
 package phonebook.controller;
 
 import org.springframework.beans.factory.annotation.Autowired;
-import org.springframework.ui.Model;
 import org.springframework.web.bind.annotation.*;
 import phonebook.model.Contact;
-import phonebook.service.ContactService;
+import phonebook.service.ContactServiceImpl;
 
 import java.util.List;
 
@@ -12,49 +11,43 @@ import java.util.List;
 @RequestMapping("/api/contact")
 public class ContactController {
 
+    ContactServiceImpl contactServiceImpl;
+
     @Autowired
-    private ContactService contactService;
+    public ContactController(ContactServiceImpl contactServiceImpl) {
+        this.contactServiceImpl = contactServiceImpl;
+    }
 
     @PostMapping("/add")
     public String add(@RequestBody Contact contact) {
-        contactService.saveContact(contact);
-        return "redirect:/";
+        contactServiceImpl.saveContact(contact);
+        return "Contact added successfully";
     }
 
     @GetMapping("/")
-    public String index(Model model) {
-        List<Contact> contacts = contactService.getContacts();
-        model.addAttribute("contacts", contacts);
-        return "index";
+    public List<Contact> index() {
+        return contactServiceImpl.getContacts();
     }
 
     @DeleteMapping("/delete")
     public String delete(@RequestParam String name,
-                         @RequestParam String number
-    ) {
-        contactService.deleteContact(name, number);
-        return "redirect:/";
+                         @RequestParam String number) {
+        contactServiceImpl.deleteContact(name, number);
+        return "Contact deleted successfully";
     }
 
     @GetMapping("/edit")
-    public String edit(@RequestParam String name,
-                       @RequestParam String number,
-                       Model model
-    ) {
-        Contact contact = contactService.findContact(name, number);
-        if (contact != null) {
-            model.addAttribute("contact", contact);
-        }
-        return "edit";
+    public Contact edit(@RequestParam String name,
+                        @RequestParam String number) {
+        return contactServiceImpl.findContact(name, number);
     }
 
     @PutMapping("/save")
     public String saveOrUpdate(
-            @ModelAttribute Contact oldContact, // Шинэ контакт
-            @RequestParam("oldName") String oldName, // Хуучин нэр
-            @RequestParam("oldNumber") String oldNumber // Хуучин дугаар
-    ) {
-       contactService.editContact(oldContact, oldName, oldNumber);
-        return "redirect:/";
+            @RequestBody Contact oldContact,
+            @RequestParam("oldName") String oldName,
+            @RequestParam("oldNumber") String oldNumber) {
+        contactServiceImpl.editContact(oldContact, oldName, oldNumber);
+        return "Contact updated successfully";
     }
 }

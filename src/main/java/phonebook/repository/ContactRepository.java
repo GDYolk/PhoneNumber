@@ -1,14 +1,11 @@
 package phonebook.repository;
 
-import org.springframework.stereotype.Repository;
 import org.springframework.data.jpa.repository.JpaRepository;
+import org.springframework.stereotype.Repository;
 import phonebook.model.Contact;
+import java.util.Optional;
 
 @Repository
-public interface ContactRepository extends JpaRepository<Contact, Long>{
-    //CRUD үйлдлүүдийг автоматаар Spring Data JPA хийж өгнө.
-    //@Query("SELECT c FROM Contact c WHERE c.name = ?1 AND c.number = ?2")
-    Contact findByNameAndNumber(String name, String number);
-
-    boolean existsByNameAndNumber(String name, String number);
+public interface ContactRepository extends JpaRepository<Contact, Long> {
+    Optional<Contact> findByNameAndNumber(String name, String number);
 }
